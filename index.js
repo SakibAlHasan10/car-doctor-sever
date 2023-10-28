@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express()
 require("dotenv").config();
 const port = process.env.PORT || 5000
@@ -24,8 +24,25 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const carDoctor = client.db("carDoctor").collection("services");
+    // get single services data
+    app.get(`/services/:id`, async(req, res)=>{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const result = await carDoctor.findOne(filter)
+        res.send(result)
+    })
+    // get all services data
+    app.get("/services", async(req, res)=>{
+        const cursor = carDoctor.find();
+        const result = await cursor.toArray()
+        res.send(result)
+    })
+
+
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     // console.log(
@@ -44,6 +61,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Running car doctor port ${port}`);
 });
-
-// djwjfBf9MnJFGNNH
-// Car-Doctor
