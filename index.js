@@ -25,12 +25,29 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const carDoctor = client.db("carDoctor").collection("services");
+    const bookings = client.db("carDoctor").collection("bookings");
     // get single services data
     app.get(`/services/:id`, async(req, res)=>{
         const id = req.params.id;
         const filter = {_id: new ObjectId(id)}
         const result = await carDoctor.findOne(filter)
         res.send(result)
+    })
+    // get single services 
+    // app.get(`/booking`, async(req, res)=>{
+    //   let query = {}
+    //   if(req.query?.email){
+    //     qurey = {email: req.query?.email}
+    //   }
+    //   const result = await carDoctor.find(query).toArray()
+    //   res.send(result)
+    // })
+    // bookings
+    app.post(`/bookings`, async(req, res)=>{
+      const booking = req.body;
+      console.log(booking)
+      const result =  await bookings.insertOne(booking);
+      res.send(result)
     })
     // get all services data
     app.get("/services", async(req, res)=>{
