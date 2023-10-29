@@ -44,17 +44,27 @@ async function run() {
     });
     app.post(`/bookings`, async (req, res) => {
       const booking = req.body;
-      console.log(booking);
       const result = await bookings.insertOne(booking);
       res.send(result);
     });
-    app.delete(`/bookings/:id`, async(req, res)=>{
+    app.patch(`/bookings/:id`, async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
-      const result= await bookings.deleteOne(query)
+      const query = { _id: new ObjectId(id) };
+      const updateBooking = req.body;
+      const updateDoc = {
+        $set: {
+          status: updateBooking.status,
+        },
+      };
+      const result = await bookings.updateOne(query, updateDoc)
       res.send(result)
-      // console.log(query)
-    })
+    });
+    app.delete(`/bookings/:id`, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookings.deleteOne(query);
+      res.send(result);
+    });
     // get all services data
     app.get("/services", async (req, res) => {
       const cursor = carDoctor.find();
